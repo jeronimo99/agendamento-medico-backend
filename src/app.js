@@ -4,15 +4,21 @@ const morgan = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+const userRoutes = require('../routes/user');
+const { handleInternalError } = require('../middlewares');
+
 const port = process.env.PORT || 5000;
 const app = express();
+
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 app.use(morgan('tiny'));
 app.use(cors());
 dotenv.config();
 
-app.use('/', (request, response) => {
-  response.send({msg: 'Hello World'});
-});
+app.use('/api/user/', userRoutes);
+
+app.use(handleInternalError);
 
 mongoose
   .connect(
