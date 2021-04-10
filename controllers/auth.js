@@ -41,7 +41,40 @@ const registerController = async (req, res, next) => {
       { expiresIn: TOKEN_EXPIRATION }
     );
 
-    res.status(200).json({ user: newUser.email, role: newUser.role, token });
+    res.status(200).json({ email: newUser.email, role: newUser.role, token });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+const loginController = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ error: 'Validation error.' });
+  }
+
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: 'Username does not exist.' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(400).json({ error: 'Password is incorrect.' });
+    }
+
+    const token = jwt.sign(
+      { email: user.email, role: user.role },
+      TOKEN_SECRET,
+      { expiresIn: TOKEN_EXPIRATION }
+    );
+
+    res.status(200).json({ user: user.email, role: user.role, token });
   } catch (err) {
     console.log(err);
     next(err);
@@ -58,4 +91,4 @@ const deleteController = async (req, res, next) => {
   }
 };
 
-module.exports = { registerController, deleteController };
+module.exports = { registerController, loginController, deleteController };
