@@ -11,12 +11,12 @@ const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
 app.use(cors());
 dotenv.config();
 
-app.use('/api/user/', userRoutes);
+app.use('/api/', userRoutes);
 
 app.use(handleInternalError);
 
