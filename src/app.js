@@ -4,8 +4,15 @@ const morgan = require('morgan');
 const cors = require('cors');
 const dotenv = require('dotenv');
 
+const authRoutes = require('../routes/auth');
+const adminRoutes = require('../routes/admin');
 const userRoutes = require('../routes/user');
-const { handleInternalError } = require('../middlewares');
+const {
+  requireAuth,
+  requireAdmin,
+  requireUser,
+  handleInternalError,
+} = require('../middlewares');
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -16,7 +23,9 @@ app.use(morgan('tiny'));
 app.use(cors());
 dotenv.config();
 
-app.use('/api/', userRoutes);
+app.use('/api/', authRoutes);
+app.use('/api/admin', requireAuth, requireAdmin, adminRoutes);
+app.use('/api/user', requireAuth, requireUser, userRoutes);
 
 app.use(handleInternalError);
 
