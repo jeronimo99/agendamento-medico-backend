@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 dotenv.config();
 
 const Doctor = require('../models/doctor');
+const User = require('../models/user');
 
 const addDoctorController = async (req, res, next) => {
   const errors = validationResult(req);
@@ -60,8 +61,20 @@ const deleteDoctorsController = async (req, res, next) => {
   }
 };
 
+const getPatientsController = async (req, res, next) => {
+  try {
+    const patients = await User.find({ role: 'user' });
+
+    res.status(200).json({ patients });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 module.exports = {
   addDoctorController,
   getDoctorsController,
   deleteDoctorsController,
+  getPatientsController,
 };
