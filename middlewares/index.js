@@ -33,16 +33,14 @@ const requireAdmin = (req, res, next) => {
   if (req.role === 'admin') {
     return next();
   }
-
-  return res.status(403).json({ error: 'Unauthorized' });
+  return res.status(401).json({ error: 'Unauthorized' });
 };
 
 const requireUser = (req, res, next) => {
   if (req.role === 'user') {
     return next();
   }
-
-  return res.status(403).json({ error: 'Unauthorized' });
+  return res.status(401).json({ error: 'Unauthorized' });
 };
 
 const handleInternalError = (err, req, res, next) => {
