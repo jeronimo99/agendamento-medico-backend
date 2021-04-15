@@ -1,7 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-const dotenv = require('dotenv');
 
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
@@ -20,7 +19,6 @@ function createServer() {
   app.use(express.urlencoded({ extended: true }));
   app.use(morgan('tiny'));
   app.use(cors());
-  dotenv.config();
 
   app.use('/api/', authRoutes);
   app.use('/api/admin', requireAuth, requireAdmin, adminRoutes);
