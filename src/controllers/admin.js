@@ -37,6 +37,21 @@ const getDoctorsController = async (req, res, next) => {
   try {
     const doctors = await Doctor.find({});
 
+    const specs = doctors.map((doctor) => doctor.spec);
+
+    const noRepeatedSpecs = [...new Set(specs)];
+
+    res.status(200).json({ specs: noRepeatedSpecs });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+const getSpecsController = async (req, res, next) => {
+  try {
+    const doctors = await Doctor.find({});
+
     res.status(200).json({ doctors });
   } catch (err) {
     console.log(err);
@@ -75,6 +90,7 @@ const getPatientsController = async (req, res, next) => {
 module.exports = {
   addDoctorController,
   getDoctorsController,
+  getSpecsController,
   deleteDoctorsController,
   getPatientsController,
 };
