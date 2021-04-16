@@ -10,9 +10,9 @@ const {
 
 router.post(
   '/register',
-  body('name').isLength({ min: 4, max: 50 }).isLowercase(),
-  body('phone').isLowercase(),
-  body('email').isEmail().isLowercase(),
+  body('name').isLength({ min: 4, max: 50 }),
+  body('phone'),
+  body('email').isEmail(),
   body('password').isLength({ min: 6, max: 20 }),
   registerController
 );
