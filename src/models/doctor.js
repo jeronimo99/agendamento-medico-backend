@@ -4,6 +4,7 @@ const doctorSchema = new mongoose.Schema({
   name: String,
   crm: String,
   spec: String,
+  schedules: Array,
 });
 
 const Doctor = mongoose.model('Doctor', doctorSchema);

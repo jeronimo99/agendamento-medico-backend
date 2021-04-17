@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const Doctor = require('../models/doctor');
+const { defaultScheduleList } = require('../utils/constants');
 dotenv.config();
 
 const getSpecsController = async (req, res, next) => {
@@ -22,7 +23,6 @@ const getDoctorsBySpecController = async (req, res, next) => {
 
   try {
     const doctors = await Doctor.find({ spec: id });
-    console.log(doctors);
     res.status(200).json({ doctors });
   } catch (err) {
     console.log(err);
@@ -30,4 +30,33 @@ const getDoctorsBySpecController = async (req, res, next) => {
   }
 };
 
-module.exports = { getSpecsController, getDoctorsBySpecController };
+const getScheduleListController = async (req, res, next) => {
+  const { id } = req.params;
+  const { date } = req.query;
+
+  try {
+    const doctor = await Doctor.findOne({ crm: id });
+
+    const dayIndex = doctor.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    if (dayIndex > 0) {
+      const scheduleList = defaultScheduleList.filter(
+        (schedule) => !doctor.schedules.dayIndex.includes(schedule)
+      );
+      return res.status(200).json({ scheduleList: scheduleList });
+    }
+
+    res.status(200).json({ scheduleList: defaultScheduleList });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+module.exports = {
+  getSpecsController,
+  getDoctorsBySpecController,
+  getScheduleListController,
+};

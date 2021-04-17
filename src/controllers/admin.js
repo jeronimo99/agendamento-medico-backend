@@ -23,6 +23,7 @@ const addDoctorController = async (req, res, next) => {
       name,
       crm,
       spec,
+      schedules: [],
     });
     await newDoctor.save();
 
@@ -45,7 +46,7 @@ const getDoctorsController = async (req, res, next) => {
 };
 
 const deleteDoctorsController = async (req, res, next) => {
-  const { id } = req.params;
+  const { id } = req.body;
 
   try {
     const result = await Doctor.deleteOne({ crm: id });

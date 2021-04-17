@@ -123,7 +123,7 @@ describe('POST /api/admin/doctors', () => {
   });
 });
 
-describe('DELETE /api/admin/doctors/:id', () => {
+describe('DELETE /api/admin/doctors/', () => {
   let doctor;
 
   test('Delete a doctor with success', async () => {
@@ -137,8 +137,9 @@ describe('DELETE /api/admin/doctors/:id', () => {
     await doctor.save();
 
     await supertest(app)
-      .delete(`/api/admin/doctors/${doctor.crm}`)
+      .put(`/api/admin/doctors/`)
       .set('Authorization', `bearer ${token}`)
+      .send({ id: doctor.crm })
       .expect(200);
 
     await Doctor.deleteMany({ crm: '123456789' });
@@ -148,8 +149,9 @@ describe('DELETE /api/admin/doctors/:id', () => {
     await Doctor.deleteMany({ crm: '123456789' });
 
     await supertest(app)
-      .delete(`/api/admin/doctors/123456789`)
+      .put(`/api/admin/doctors/`)
       .set('Authorization', `bearer ${token}`)
+      .send({ id: 123456789 })
       .expect(400);
   });
 });
