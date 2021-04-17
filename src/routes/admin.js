@@ -18,7 +18,7 @@ router.post(
   body('spec').isString(),
   addDoctorController
 );
-router.put('/doctors/', deleteDoctorsController);
+router.put('/doctors/:id', deleteDoctorsController);
 
 router.get('/patients', getPatientsController);
 

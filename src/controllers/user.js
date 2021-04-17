@@ -35,7 +35,32 @@ const getScheduleListController = async (req, res, next) => {
   const { date } = req.query;
 
   try {
-    const doctor = await Doctor.findOne({ crm: id });
+    const doctor = await Doctor.findOne({ _id: id });
+
+    const dayIndex = doctor.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    if (dayIndex > 0) {
+      const scheduleList = defaultScheduleList.filter(
+        (schedule) => !doctor.schedules.dayIndex.includes(schedule)
+      );
+      return res.status(200).json({ scheduleList: scheduleList });
+    }
+
+    res.status(200).json({ scheduleList: defaultScheduleList });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
+const addScheduleController = async (req, res, next) => {
+  const { id } = req.params;
+  const { date, spec } = req.body;
+
+  try {
+    const doctor = await Doctor.findOne({ _id: id });
 
     const dayIndex = doctor.schedules.findIndex(
       (schedule) => schedule.date === date
@@ -59,4 +84,5 @@ module.exports = {
   getSpecsController,
   getDoctorsBySpecController,
   getScheduleListController,
+  addScheduleController,
 };

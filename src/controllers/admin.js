@@ -46,13 +46,13 @@ const getDoctorsController = async (req, res, next) => {
 };
 
 const deleteDoctorsController = async (req, res, next) => {
-  const { id } = req.body;
+  const { id } = req.params;
 
   try {
-    const result = await Doctor.deleteOne({ crm: id });
+    const result = await Doctor.deleteOne({ _id: id });
 
     if (result.deletedCount === 0) {
-      return res.status(400).json({ error: 'Could not find this CRM.' });
+      return res.status(400).json({ error: 'Could not find this doctor.' });
     }
 
     res.status(200).json({ msg: 'Doctor deleted with success.' });
