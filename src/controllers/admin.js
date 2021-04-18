@@ -98,10 +98,52 @@ const getAppointmentsByDoctorController = async (req, res, next) => {
   }
 };
 
+const deleteAppointmentController = async (req, res, next) => {
+  const { id } = req.params;
+  const { date, schedule } = req.body;
+
+  console.log(id, date, schedule);
+
+  try {
+    const doctor = await Doctor.findOne({ _id: id });
+    const scheduleIndex = doctor.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    const user = await User.findOne({ _id: req._id });
+
+    const newAppointments = doctor.schedules[scheduleIndex].appointments.filter(
+      (item) => item.appointment !== schedule
+    );
+
+    doctor.schedules[scheduleIndex].appointments = newAppointments;
+
+    await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
+
+    const userScheduleIndex = doctor.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    if (userScheduleIndex) {
+      const newUser = user.schedules[userScheduleIndex].appointments.filter(
+        (item) => item.appointment !== schedule
+      );
+
+      await User.findByIdAndUpdate({ _id: req._id }, newUser);
+    }
+
+    res.status(200).json({ msg: 'ok' });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 module.exports = {
   addDoctorController,
   getDoctorsController,
   deleteDoctorsController,
   getPatientsController,
   getAppointmentsByDoctorController,
+  deleteAppointmentController,
 };

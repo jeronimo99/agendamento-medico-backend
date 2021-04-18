@@ -8,6 +8,7 @@ const {
   deleteDoctorsController,
   getPatientsController,
   getAppointmentsByDoctorController,
+  deleteAppointmentController,
 } = require('../controllers/admin');
 
 router.get('/doctors', getDoctorsController);
@@ -24,5 +25,6 @@ router.put('/doctors/:id', deleteDoctorsController);
 router.get('/patients', getPatientsController);
 
 router.get('/doctors/:id/appointments', getAppointmentsByDoctorController);
+router.put('/doctors/:id/appointments', deleteAppointmentController);
 
 module.exports = router;

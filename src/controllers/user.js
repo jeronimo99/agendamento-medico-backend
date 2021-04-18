@@ -80,22 +80,39 @@ const addScheduleController = async (req, res, next) => {
             userId: req._id,
             appointment: schedule,
             name: user.name,
+            phone: user.phone,
           },
         ],
       };
       doctor.schedules.push(newSchedule);
       await doctor.save();
+
+      user.schedules.push(newSchedule);
+      await user.save();
+
       return res.status(200).json(doctor);
     }
 
     doctor.schedules[scheduleIndex].appointments.push({
       userId: req._id,
       appointment: schedule,
+      name: user.name,
+      phone: user.phone,
     });
-
     await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
 
-    res.status(200).json(doctor);
+    if (scheduleIndex > -1) {
+      user.schedules[scheduleIndex].appointments.push({
+        userId: req._id,
+        appointment: schedule,
+        name: user.name,
+        phone: user.phone,
+      });
+
+      await User.findByIdAndUpdate({ _id: req._id }, user);
+    }
+
+    res.status(200).json({ msg: 'success' });
   } catch (err) {
     console.log(err);
     next(err);
