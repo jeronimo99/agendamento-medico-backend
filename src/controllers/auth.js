@@ -36,7 +36,7 @@ const registerController = async (req, res, next) => {
     await newUser.save();
 
     const token = jwt.sign(
-      { email: newUser.email, role: newUser.role },
+      { email: newUser.email, role: newUser.role, _id: newUser._id },
       TOKEN_SECRET,
       { expiresIn: TOKEN_EXPIRATION }
     );
@@ -68,7 +68,7 @@ const loginController = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { email: user.email, role: user.role },
+      { email: user.email, role: user.role, _id: user._id },
       TOKEN_SECRET,
       { expiresIn: TOKEN_EXPIRATION }
     );

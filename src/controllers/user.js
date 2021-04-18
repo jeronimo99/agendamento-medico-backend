@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const Doctor = require('../models/doctor');
+const User = require('../models/user');
 const { defaultScheduleList } = require('../utils/constants');
 dotenv.config();
 
@@ -37,13 +38,17 @@ const getScheduleListController = async (req, res, next) => {
   try {
     const doctor = await Doctor.findOne({ _id: id });
 
-    const dayIndex = doctor.schedules.findIndex(
+    const dateIndex = doctor.schedules.findIndex(
       (schedule) => schedule.date === date
     );
 
-    if (dayIndex > 0) {
+    if (dateIndex > -1) {
+      const activeSchedules = doctor.schedules[dateIndex].appointments.map(
+        (item) => item.appointment
+      );
+
       const scheduleList = defaultScheduleList.filter(
-        (schedule) => !doctor.schedules.dayIndex.includes(schedule)
+        (item) => !activeSchedules.includes(item)
       );
       return res.status(200).json({ scheduleList: scheduleList });
     }
@@ -57,23 +62,40 @@ const getScheduleListController = async (req, res, next) => {
 
 const addScheduleController = async (req, res, next) => {
   const { id } = req.params;
-  const { date, spec } = req.body;
+  const { date, schedule } = req.body;
 
   try {
     const doctor = await Doctor.findOne({ _id: id });
-
-    const dayIndex = doctor.schedules.findIndex(
+    const scheduleIndex = doctor.schedules.findIndex(
       (schedule) => schedule.date === date
     );
 
-    if (dayIndex > 0) {
-      const scheduleList = defaultScheduleList.filter(
-        (schedule) => !doctor.schedules.dayIndex.includes(schedule)
-      );
-      return res.status(200).json({ scheduleList: scheduleList });
+    const user = await User.findOne({ _id: req._id });
+
+    if (scheduleIndex < 0) {
+      const newSchedule = {
+        date: date,
+        appointments: [
+          {
+            userId: req._id,
+            appointment: schedule,
+            name: user.name,
+          },
+        ],
+      };
+      doctor.schedules.push(newSchedule);
+      await doctor.save();
+      return res.status(200).json(doctor);
     }
 
-    res.status(200).json({ scheduleList: defaultScheduleList });
+    doctor.schedules[scheduleIndex].appointments.push({
+      userId: req._id,
+      appointment: schedule,
+    });
+
+    await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
+
+    res.status(200).json(doctor);
   } catch (err) {
     console.log(err);
     next(err);

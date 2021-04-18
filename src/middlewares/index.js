@@ -20,6 +20,7 @@ const requireAuth = (req, res, next) => {
         .json({ error: 'Invalid token. Could not authenticate.' });
     }
     req.role = decoded.role;
+    req._id = decoded._id;
     next();
   } catch (err) {
     console.log(err);

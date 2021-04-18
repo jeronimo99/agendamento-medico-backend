@@ -1,5 +1,6 @@
 const dotenv = require('dotenv');
 const { validationResult } = require('express-validator');
+
 dotenv.config();
 
 const Doctor = require('../models/doctor');
@@ -73,9 +74,34 @@ const getPatientsController = async (req, res, next) => {
   }
 };
 
+const getAppointmentsByDoctorController = async (req, res, next) => {
+  const { id } = req.params;
+  const { date } = req.query;
+
+  try {
+    const doctor = await Doctor.findOne({ _id: id });
+
+    const dateIndex = doctor.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    if (dateIndex < 0) {
+      return res.status(200).json([]);
+    }
+
+    const appointments = doctor.schedules[dateIndex].appointments;
+
+    res.status(200).json({ appointments: appointments });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 module.exports = {
   addDoctorController,
   getDoctorsController,
   deleteDoctorsController,
   getPatientsController,
+  getAppointmentsByDoctorController,
 };
