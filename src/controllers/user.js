@@ -125,9 +125,37 @@ const addScheduleController = async (req, res, next) => {
   }
 };
 
+const getUserSchedules = async (req, res, next) => {
+  const { date } = req.query;
+
+  console.log(req._id);
+  console.log(date);
+  try {
+    const user = await User.findOne({ _id: req._id });
+
+    const dateIndex = user.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    if (dateIndex > -1) {
+      const activeSchedules = user.schedules[dateIndex].appointments.map(
+        (item) => item.appointment
+      );
+
+      return res.status(200).json({ schedules: activeSchedules });
+    }
+
+    res.status(200).json({ schedules: [] });
+  } catch (err) {
+    console.log(err);
+    next(err);
+  }
+};
+
 module.exports = {
   getSpecsController,
   getDoctorsBySpecController,
   getScheduleListController,
   addScheduleController,
+  getUserSchedules,
 };
