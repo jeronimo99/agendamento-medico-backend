@@ -120,7 +120,7 @@ const deleteAppointmentController = async (req, res, next) => {
 
     await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
 
-    const userScheduleIndex = doctor.schedules.findIndex(
+    const userScheduleIndex = user.schedules.findIndex(
       (schedule) => schedule.date === date
     );
 
