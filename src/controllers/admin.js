@@ -124,7 +124,7 @@ const deleteAppointmentController = async (req, res, next) => {
       (schedule) => schedule.date === date
     );
 
-    if (userScheduleIndex) {
+    if (userScheduleIndex > -1) {
       const newUser = user.schedules[userScheduleIndex].appointments.filter(
         (item) => item.appointment !== schedule
       );

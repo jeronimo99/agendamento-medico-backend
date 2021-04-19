@@ -101,7 +101,13 @@ const addScheduleController = async (req, res, next) => {
     });
     await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
 
-    if (scheduleIndex > -1) {
+    console.log(user.schedules);
+
+    const userScheduleIndex = user.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
+
+    if (userScheduleIndex > -1) {
       user.schedules[scheduleIndex].appointments.push({
         userId: req._id,
         appointment: schedule,
