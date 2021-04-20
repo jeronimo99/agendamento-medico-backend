@@ -6,7 +6,7 @@ Esta é uma RESTful API feita em `Node.js`, sendo consumida por uma aplicação 
 
 O banco de dados é o MongoDB (não-relacional), hospedado remotamente no `MongoDB Atlas`.
 
-Esta aplicação deve ser inicializada juntamente com a sua contraparte [frontend](https://github.com/jeronimo99/agendamento-medico-frontend)
+Esta aplicação deve ser inicializada juntamente com a sua contraparte [frontend](https://github.com/jeronimo99/agendamento-medico-frontend).
 
 ## Instalação
 
