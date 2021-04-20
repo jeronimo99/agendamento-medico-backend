@@ -81,14 +81,13 @@ const addScheduleController = async (req, res, next) => {
             appointment: schedule,
             name: user.name,
             phone: user.phone,
+            doctor: doctor.name,
+            spec: doctor.spec,
           },
         ],
       };
       doctor.schedules.push(newSchedule);
       await doctor.save();
-
-      user.schedules.push(newSchedule);
-      await user.save();
 
       return res.status(200).json(doctor);
     }
@@ -98,25 +97,44 @@ const addScheduleController = async (req, res, next) => {
       appointment: schedule,
       name: user.name,
       phone: user.phone,
+      doctor: doctor.name,
+      spec: doctor.spec,
     });
     await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
-
-    console.log(user.schedules);
 
     const userScheduleIndex = user.schedules.findIndex(
       (schedule) => schedule.date === date
     );
 
     if (userScheduleIndex > -1) {
-      user.schedules[scheduleIndex].appointments.push({
+      user.schedules[userScheduleIndex].appointments.push({
         userId: req._id,
         appointment: schedule,
         name: user.name,
         phone: user.phone,
+        doctor: doctor.name,
+        spec: doctor.spec,
       });
 
       await User.findByIdAndUpdate({ _id: req._id }, user);
+
+      return res.status(200).json({ msg: 'success' });
     }
+
+    user.schedules.push({
+      date: date,
+      appointments: [
+        {
+          userId: req._id,
+          appointment: schedule,
+          name: user.name,
+          phone: user.phone,
+          doctor: doctor.name,
+          spec: doctor.spec,
+        },
+      ],
+    });
+    await user.save();
 
     res.status(200).json({ msg: 'success' });
   } catch (err) {
@@ -126,26 +144,22 @@ const addScheduleController = async (req, res, next) => {
 };
 
 const getUserSchedules = async (req, res, next) => {
-  const { date } = req.query;
-
-  console.log(req._id);
-  console.log(date);
   try {
     const user = await User.findOne({ _id: req._id });
+    const schedules = [];
 
-    const dateIndex = user.schedules.findIndex(
-      (schedule) => schedule.date === date
-    );
+    user.schedules.map((schedule) => {
+      schedule.appointments.map((item) => {
+        schedules.push({
+          date: schedule.date,
+          appointment: item.appointment,
+          doctor: item.doctor,
+          spec: item.spec,
+        });
+      });
+    });
 
-    if (dateIndex > -1) {
-      const activeSchedules = user.schedules[dateIndex].appointments.map(
-        (item) => item.appointment
-      );
-
-      return res.status(200).json({ schedules: activeSchedules });
-    }
-
-    res.status(200).json({ schedules: [] });
+    res.status(200).json({ schedules: schedules });
   } catch (err) {
     console.log(err);
     next(err);

@@ -130,7 +130,13 @@ const deleteAppointmentController = async (req, res, next) => {
       );
 
       await User.findByIdAndUpdate({ _id: req._id }, newUser);
+
+      return res.status(200).json({ msg: 'ok' });
     }
+
+    user.schedules = [];
+
+    await user.save();
 
     res.status(200).json({ msg: 'ok' });
   } catch (err) {
