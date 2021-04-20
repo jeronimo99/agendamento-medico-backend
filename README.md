@@ -16,9 +16,9 @@ Tenha instalado o `node` e o gerenciador de pacotes `npm` em sua máquina. Clone
 
 É preciso adicionar um arquivo `.env` no diretório root com suas variáveis de ambiente para configuração do banco de dados remoto e da chave de autenticação JWT. Você pode utilizar as seguintes variáveis de ambientes para fins de teste em seu arquivo `.env`:
 
-DB_USER=jeronimo
-DB_PASSWORD=y4tzvbn0dDZ5aM17
-DB_NAME=agendamento-medico-test
+DB_USER=jeronimo\
+DB_PASSWORD=y4tzvbn0dDZ5aM17\
+DB_NAME=agendamento-medico-test\
 TOKEN_SECRET=O6l$-e@k2-a!8bn
 
 ## Modo de Desenvolvedor
