@@ -8,6 +8,13 @@ O banco de dados é o MongoDB (não-relacional), hospedado remotamente no `Mongo
 
 Esta aplicação deve ser inicializada juntamente com a sua contraparte [frontend](https://github.com/jeronimo99/agendamento-medico-frontend).
 
+## Demonstração
+
+Uma demonstração da aplicação completa (frontend + backend) pode ser encontrada em [Agendamento Médico](https://agendamento-medico-jeronimo.vercel.app)
+
+login: admin@admin.com
+senha: 12345678
+
 ## Instalação
 
 Tenha instalado o `node` e o gerenciador de pacotes `npm` em sua máquina. Clone este repositório e instale as dependências.
