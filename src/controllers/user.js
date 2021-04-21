@@ -89,54 +89,40 @@ const addScheduleController = async (req, res, next) => {
       doctor.schedules.push(newSchedule);
       await doctor.save();
 
+      const userScheduleIndex = user.schedules.findIndex(
+        (schedule) => schedule.date === date
+      );
+
+      if (userScheduleIndex < 0) {
+        user.schedules.push(newSchedule);
+
+        await User.findByIdAndUpdate({ _id: req._id }, user);
+      }
+
       return res.status(200).json(doctor);
     }
 
-    doctor.schedules[scheduleIndex].appointments.push({
+    const newAppointment = {
       userId: req._id,
       appointment: schedule,
       name: user.name,
       phone: user.phone,
       doctor: doctor.name,
       spec: doctor.spec,
-    });
+    };
+
+    doctor.schedules[scheduleIndex].appointments.push(newAppointment);
     await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
 
     const userScheduleIndex = user.schedules.findIndex(
       (schedule) => schedule.date === date
     );
 
-    if (userScheduleIndex > -1) {
-      user.schedules[userScheduleIndex].appointments.push({
-        userId: req._id,
-        appointment: schedule,
-        name: user.name,
-        phone: user.phone,
-        doctor: doctor.name,
-        spec: doctor.spec,
-      });
+    user.schedules[userScheduleIndex].appointments.push(newAppointment);
 
-      await User.findByIdAndUpdate({ _id: req._id }, user);
+    await User.findByIdAndUpdate({ _id: req._id }, user);
 
-      return res.status(200).json({ msg: 'success' });
-    }
-
-    user.schedules.push({
-      date: date,
-      appointments: [
-        {
-          userId: req._id,
-          appointment: schedule,
-          name: user.name,
-          phone: user.phone,
-          doctor: doctor.name,
-          spec: doctor.spec,
-        },
-      ],
-    });
-    await user.save();
-
-    res.status(200).json({ msg: 'success' });
+    return res.status(200).json({ msg: 'success' });
   } catch (err) {
     console.log(err);
     next(err);
