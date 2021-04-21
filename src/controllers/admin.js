@@ -102,15 +102,17 @@ const deleteAppointmentController = async (req, res, next) => {
   const { id } = req.params;
   const { date, schedule } = req.body;
 
-  console.log(id, date, schedule);
-
   try {
     const doctor = await Doctor.findOne({ _id: id });
     const scheduleIndex = doctor.schedules.findIndex(
       (schedule) => schedule.date === date
     );
 
-    const user = await User.findOne({ _id: req._id });
+    const userRef = doctor.schedules[scheduleIndex].appointments.find(
+      (item) => item.appointment === schedule
+    );
+
+    const user = await User.findOne({ _id: userRef.userId });
 
     const newAppointments = doctor.schedules[scheduleIndex].appointments.filter(
       (item) => item.appointment !== schedule
@@ -124,19 +126,13 @@ const deleteAppointmentController = async (req, res, next) => {
       (schedule) => schedule.date === date
     );
 
-    if (userScheduleIndex > -1) {
-      const newUser = user.schedules[userScheduleIndex].appointments.filter(
-        (item) => item.appointment !== schedule
-      );
+    const newUserAppointments = user.schedules[
+      userScheduleIndex
+    ].appointments.filter((item) => item.appointment !== schedule);
 
-      await User.findByIdAndUpdate({ _id: req._id }, newUser);
+    user.schedules[userScheduleIndex].appointments = newUserAppointments;
 
-      return res.status(200).json({ msg: 'ok' });
-    }
-
-    user.schedules = [];
-
-    await user.save();
+    await User.findByIdAndUpdate({ _id: userRef.userId }, user);
 
     res.status(200).json({ msg: 'ok' });
   } catch (err) {

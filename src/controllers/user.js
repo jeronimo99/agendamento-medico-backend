@@ -73,7 +73,7 @@ const addScheduleController = async (req, res, next) => {
     const user = await User.findOne({ _id: req._id });
 
     if (scheduleIndex < 0) {
-      const newSchedule = {
+      doctor.schedules.push({
         date: date,
         appointments: [
           {
@@ -85,21 +85,31 @@ const addScheduleController = async (req, res, next) => {
             spec: doctor.spec,
           },
         ],
-      };
-      doctor.schedules.push(newSchedule);
+      });
       await doctor.save();
+    }
 
-      const userScheduleIndex = user.schedules.findIndex(
-        (schedule) => schedule.date === date
-      );
+    const userScheduleIndex = user.schedules.findIndex(
+      (schedule) => schedule.date === date
+    );
 
-      if (userScheduleIndex < 0) {
-        user.schedules.push(newSchedule);
+    if (userScheduleIndex < 0) {
+      user.schedules.push({
+        date: date,
+        appointments: [
+          {
+            userId: req._id,
+            appointment: schedule,
+            name: user.name,
+            phone: user.phone,
+            doctor: doctor.name,
+            spec: doctor.spec,
+          },
+        ],
+      });
 
-        await User.findByIdAndUpdate({ _id: req._id }, user);
-      }
-
-      return res.status(200).json(doctor);
+      await User.findByIdAndUpdate({ _id: req._id }, user);
+      return res.status(200).json({ msg: 'success' });
     }
 
     const newAppointment = {
@@ -114,12 +124,7 @@ const addScheduleController = async (req, res, next) => {
     doctor.schedules[scheduleIndex].appointments.push(newAppointment);
     await Doctor.findByIdAndUpdate({ _id: doctor._id }, doctor);
 
-    const userScheduleIndex = user.schedules.findIndex(
-      (schedule) => schedule.date === date
-    );
-
     user.schedules[userScheduleIndex].appointments.push(newAppointment);
-
     await User.findByIdAndUpdate({ _id: req._id }, user);
 
     return res.status(200).json({ msg: 'success' });
